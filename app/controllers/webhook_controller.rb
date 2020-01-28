@@ -29,7 +29,7 @@ class WebhookController < ApplicationController
 
     events = client.parse_events_from(body)
     events.each { |event|
-      if event.message['text'].include("メニュー")
+      if event.message['text'].include?("メニュー")
         response = menu.sample
       else
         response = event.message['text']

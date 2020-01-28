@@ -73,7 +73,7 @@ $ heroku logs --tail
 
 ## Q. masterブランチ以外をherokuにデプロイしたい
 ```
-$ git push heroku feature/xxxxx:master -f
+$ git push heroku (branch名):master -f
 ```
 
 # 参考
