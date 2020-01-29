@@ -7,6 +7,7 @@ class WebhookController < ApplicationController
     @client ||= Line::Bot::Client.new { |config|
       config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
       config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
+      config.group_id = ENV["LINE_GROUP_ID"]
     }
   end
 
@@ -52,7 +53,6 @@ class WebhookController < ApplicationController
             #「やった」or「done」と送ってきた場合
             elsif event.message['text'] == "やった" or event.message['text'] == "done"
               response2 = "先にメニューを選んでください！"
-
             end    
 
           #すでに今日の筋トレメニューをもらっている場合
@@ -66,7 +66,6 @@ class WebhookController < ApplicationController
             #「やった」or「done」
             elsif event.message['text'] == "やった" or event.message['text'] == "done"
               response2 = "お疲れさまです"
-              response1 = ""
             end
 
           end
@@ -84,7 +83,7 @@ class WebhookController < ApplicationController
           end
 
           client.reply_message(event['replyToken'], message)
-
+          client.push_message(ENV['LINE_GROUP_ID'],message)
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
           response = client.get_message_content(event.message['id'])
           tf = Tempfile.open("content")
