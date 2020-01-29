@@ -18,7 +18,9 @@ class WebhookController < ApplicationController
       head 470
     end
 
-    if not response1.defiend?
+    begin
+      puts response1
+    rescue  
       response1 = ""
       response2 = ""
     end  
