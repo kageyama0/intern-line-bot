@@ -1,4 +1,5 @@
 require 'line/bot'
+#require 'date'
 
 class WebhookController < ApplicationController
   protect_from_forgery except: [:callback] # CSRF対策無効化
@@ -16,14 +17,7 @@ class WebhookController < ApplicationController
     signature = request.env['HTTP_X_LINE_SIGNATURE']
     unless client.validate_signature(body, signature)
       head 470
-    end
-
-    begin
-      puts response1
-    rescue  
-      response1 = ""
-      response2 = ""
-    end  
+    end 
 
     events = client.parse_events_from(body)
     events.each { |event|
@@ -31,9 +25,16 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          #response1が空、つまりまだ今日のメニューをもらっていない場合
-          if response1.empty?
+          #最新の筋トレ記録を取得する
+          @latest_training = Training.find_by(id: Training.count)
+          @latest_training_date = Date.parse(String(@latest_training.created_at).split()[0])
 
+          #今日の日付
+          @today = Date.parse(String(Time.current).split()[0])
+
+
+          #まだ今日のメニューをもらっていない場合
+          if @latest_training_date < @today 
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
             if event.message['text'] == "メニュー"
               menu = [
