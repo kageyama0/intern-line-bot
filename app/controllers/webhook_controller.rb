@@ -1,5 +1,4 @@
 require 'line/bot'
-#require 'date'
 
 class WebhookController < ApplicationController
   protect_from_forgery except: [:callback] # CSRF対策無効化
@@ -62,7 +61,7 @@ class WebhookController < ApplicationController
             #「メニュー」と送ってきた場合
             if event.message['text'] == "メニュー"
               response1 = menu.sample
-              @training.menu = response1
+              @latest_training.menu = response1
             
             #「やった」or「done」
             elsif event.message['text'] == "やった" or event.message['text'] == "done"
@@ -83,7 +82,9 @@ class WebhookController < ApplicationController
               text: response2
             } 
           end
+
           client.reply_message(event['replyToken'], message)
+
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
           response = client.get_message_content(event.message['id'])
           tf = Tempfile.open("content")
