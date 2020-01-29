@@ -7,7 +7,6 @@ class WebhookController < ApplicationController
     @client ||= Line::Bot::Client.new { |config|
       config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
       config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
-      config.group_id = ENV["LINE_GROUP_ID"]
     }
   end
 
@@ -84,6 +83,7 @@ class WebhookController < ApplicationController
 
           client.reply_message(event['replyToken'], message)
           client.push_message(ENV['LINE_GROUP_ID'],message)
+
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
           response = client.get_message_content(event.message['id'])
           tf = Tempfile.open("content")
