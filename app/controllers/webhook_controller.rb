@@ -24,9 +24,9 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          if response1.nil?
-            response1 = ""
-            
+          response1 = ""
+          response2 = ""
+
           #response1が空、つまりまだ今日のメニューをもらっていない場合
           if response1.empty?
 
@@ -35,11 +35,11 @@ class WebhookController < ApplicationController
               menu = [
                 "腹筋20回×3セット！",
                 "腕立て伏せ30回×3セット！",
-                "腹筋&腕立て伏せ20回ずつ×3セット"
+                "腹筋&腕立て伏せ20回ずつ×3セット",
                 "ランニング！雨が降っていれば、休み。",
                 "スクワット100回×1セット！",
                 "背筋30回×2セット！",
-                "まあ、たまには休んでもいいだろう。",
+                "まあ、たまには休んでもいいだろう。"
               ]
               response1 = menu.sample
               @training = Training.create(menu:response1)
