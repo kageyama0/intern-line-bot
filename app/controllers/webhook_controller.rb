@@ -19,14 +19,11 @@ class WebhookController < ApplicationController
     end
 
     events = client.parse_events_from(body)
-    events.each { |event|
+    events.each { |event|   
       case event
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          response1 = ""
-          response2 = ""
-
           #response1が空、つまりまだ今日のメニューをもらっていない場合
           if response1.empty?
 
@@ -48,8 +45,10 @@ class WebhookController < ApplicationController
             elsif event.message['text'] == "やった" or event.message['text'] == "done"
               response2 = "先にメニューを選んでください！"
 
+            end    
+
           #すでに今日の筋トレメニューをもらっている場合
-          if response1.present?
+          else
 
             #「メニュー」と送ってきた場合
             if event.message['text'] == "メニュー"
@@ -61,6 +60,7 @@ class WebhookController < ApplicationController
               response2 = "お疲れさまです"
               response1 = ""
             end
+
           end
 
           if response1.present?
@@ -73,8 +73,7 @@ class WebhookController < ApplicationController
               type: 'text',
               text: response2
             } 
-          end    
-          
+          end
           client.reply_message(event['replyToken'], message)
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
           response = client.get_message_content(event.message['id'])
