@@ -32,20 +32,21 @@ class WebhookController < ApplicationController
           #今日の日付
           @today = Date.parse(String(Time.current).split()[0])
 
+          #筋トレメニュー
+          menu = [
+            "腹筋20回×3セット！",
+            "腕立て伏せ30回×3セット！",
+            "腹筋&腕立て伏せ20回ずつ×3セット",
+            "ランニング！雨が降っていれば、休み。",
+            "スクワット100回×1セット！",
+            "背筋30回×2セット！",
+            "まあ、たまには休んでもいいだろう。"
+          ]
 
           #まだ今日のメニューをもらっていない場合
           if @latest_training_date < @today 
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
             if event.message['text'] == "メニュー"
-              menu = [
-                "腹筋20回×3セット！",
-                "腕立て伏せ30回×3セット！",
-                "腹筋&腕立て伏せ20回ずつ×3セット",
-                "ランニング！雨が降っていれば、休み。",
-                "スクワット100回×1セット！",
-                "背筋30回×2セット！",
-                "まあ、たまには休んでもいいだろう。"
-              ]
               response1 = menu.sample
               @training = Training.create(menu:response1)
             
