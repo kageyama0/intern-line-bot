@@ -18,7 +18,7 @@ class WebhookController < ApplicationController
       head 470
     end
 
-    if response1.defiend?
+    if not response1.defiend?
       response1 = ""
       response2 = ""
     end  
