@@ -28,11 +28,9 @@ class WebhookController < ApplicationController
           @latest_training = Training.find_by(id: Training.count)
           @latest_training_date = Date.parse(String(@latest_training.created_at).split()[0])
 
-          #今日の日付
-          @today = Date.parse(String(Time.current).split()[0])
+          @today = Date.today
 
-          #筋トレメニュー
-          menu = [
+          muscle_training_menu = [
             "腹筋20回×3セット！",
             "腕立て伏せ30回×3セット！",
             "腹筋&腕立て伏せ20回ずつ×3セット",
@@ -46,12 +44,12 @@ class WebhookController < ApplicationController
           if @latest_training_date < @today 
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
             if event.message['text'] == "メニュー"
-              response1 = menu.sample
-              @training = Training.create(menu:response1)
+              response_for_menu = muscle_training_menu.sample
+              @training = Training.create(menu:response_for_menu)
             
             #「やった」or「done」と送ってきた場合
             elsif event.message['text'] == "やった" or event.message['text'] == "done"
-              response2 = "先にメニューを選んでください！"
+              response_for_menu = "先にメニューを選んでください！"
             end    
 
           #すでに今日の筋トレメニューをもらっている場合
@@ -59,25 +57,26 @@ class WebhookController < ApplicationController
 
             #「メニュー」と送ってきた場合
             if event.message['text'] == "メニュー"
-              response1 = menu.sample
-              @latest_training.menu = response1
+              response_for_menu = muscle_training_menu.sample
+              @latest_training.menu = response_for_menu
             
             #「やった」or「done」
             elsif event.message['text'] == "やった" or event.message['text'] == "done"
-              response2 = "お疲れさまです"
+              response_for_done = "お疲れさまです"
+              @latest_training.check = true
             end
 
           end
 
-          if response1.present?
+          if response_for_menu.present?
             message = {
               type: 'text',
-              text: response1
+              text: response_for_menu
             }
-          elsif response2.present?
+          elsif response_for_done.present?
             message = {
               type: 'text',
-              text: response2
+              text: response_for_done
             } 
           end
 
