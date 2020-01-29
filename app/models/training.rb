@@ -1,2 +1,2 @@
-class Training < ApplicationRecord
+class Training < ActiveRecord::Base
 end
