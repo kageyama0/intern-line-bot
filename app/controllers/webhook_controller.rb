@@ -21,8 +21,8 @@ class WebhookController < ApplicationController
     events = client.parse_events_from(body)
     events.each { |event|   
       case event
-        response1 = ""
-        response2 = ""
+      response1 = ""
+      response2 = ""
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
