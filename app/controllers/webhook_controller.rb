@@ -18,15 +18,15 @@ class WebhookController < ApplicationController
       head 470
     end
 
-    response1 = ""
-    response2 = ""
-
     events = client.parse_events_from(body)
     events.each { |event|
       case event
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
+          if response1.nil?
+            response1 = ""
+            
           #response1が空、つまりまだ今日のメニューをもらっていない場合
           if response1.empty?
 
