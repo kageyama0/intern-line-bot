@@ -72,7 +72,7 @@ class WebhookController < ApplicationController
             #「やった」
             elsif message_for_done?(received_msg)
               response_for_done = "お疲れさまです"
-              training_of_today.update(menu: response_for_menu, done: true)
+              training_of_today.update(done: true)
             end
 
           end
