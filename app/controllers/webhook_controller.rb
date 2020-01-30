@@ -34,7 +34,6 @@ class WebhookController < ApplicationController
         when Line::Bot::Event::MessageType::Text
 
           received_msg = event.message['text']
-          today = Date.today
           muscle_training_menu = [
             "腹筋20回×3セット！",
             "腕立て伏せ30回×3セット！",
