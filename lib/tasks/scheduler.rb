@@ -1,5 +1,5 @@
 desc "This task is called by the Heroku scheduler add-on"
-task :update_feed => :environment do
+task :send_penalty => :environment do
   puts "Sending penalty message to group..."
   latest_training = Training.order('created_at DESC').first
   penalty_messages = [
