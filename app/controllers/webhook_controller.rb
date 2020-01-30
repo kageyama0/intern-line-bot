@@ -45,17 +45,13 @@ class WebhookController < ApplicationController
             "まあ、たまには休んでもいいだろう。"
           ]
 
-          #すでにデータがある場合、最新の筋トレ記録を取得する
-          if Training.any?
-            latest_training = Training.order('created_at DESC').first
-            latest_training_date = latest_training.created_at
-          #まだデータがない場合は、最近トレーニングした日を昨日とする。
-          else
-            latest_training_date = Date.prev_day
-          end
+
+          #今日与えられた筋トレメニューのデータがあれば...
+          today_range = Date.today.beginning_of_day..Date.today.end_of_day  
+          training_of_today = Training.where(created_at: today_range).first
 
           #まだ今日のメニューをもらっていない場合
-          if not latest_training_date.today?
+          if training_of_today.blank?
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
             if message_for_menu?(received_msg)
               response_for_menu = muscle_training_menu.sample
@@ -72,12 +68,14 @@ class WebhookController < ApplicationController
             #「メニュー」と送ってきた場合
             if message_for_menu?(received_msg)
               response_for_menu = muscle_training_menu.sample
-              latest_training.menu = response_for_menu
+              training_of_today.menu = response_for_menu
+              training_of_today.update(menu: response_for_menu)
             
             #「やった」
             elsif message_for_done?(received_msg)
               response_for_done = "お疲れさまです"
-              latest_training.done = true
+              training_of_today.done = true
+              training_of_today.update(menu: response_for_menu)
             end
 
           end
