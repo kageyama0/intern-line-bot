@@ -5,8 +5,8 @@ class WebhookController < ApplicationController
 
   def client
     @client ||= Line::Bot::Client.new { |config|
-      config.channel_secret = "2250bc69bac8865396abbe8b6086632e"
-      config.channel_token = "huLMDPpMa+A/GT0/WJZNA3lZvDjOBhYjIxSRzehEmiTZm74esUoRzg0R+ug/A1C7NwuGTpJpOozlribUhYXv40LjEPRw1+Vd23qwADllzWyhezcTtJ7kGADZcbLz4WUvMuxS8wDediB1bLm8GFv36QdB04t89/1O/w1cDnyilFU="
+      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
+      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
     }
   end
 
@@ -53,7 +53,7 @@ class WebhookController < ApplicationController
           else
             latest_training_date = Date.prev_day
           end
-          
+
           #まだ今日のメニューをもらっていない場合
           if not latest_training_date.today?
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
