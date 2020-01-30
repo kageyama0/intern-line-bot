@@ -5,9 +5,27 @@ class WebhookController < ApplicationController
 
   def client
     @client ||= Line::Bot::Client.new { |config|
-      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
-      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
+      # config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
+      # config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
+      config.channel_secret = "2250bc69bac8865396abbe8b6086632e"
+      config.channel_token = "huLMDPpMa+A/GT0/WJZNA3lZvDjOBhYjIxSRzehEmiTZm74esUoRzg0R+ug/A1C7NwuGTpJpOozlribUhYXv40LjEPRw1+Vd23qwADllzWyhezcTtJ7kGADZcbLz4WUvMuxS8wDediB1bLm8GFv36QdB04t89/1O/w1cDnyilFU="
     }
+  end
+
+  def message_for_menu?(msg)
+    if msg == "メニュー"
+      return true
+    else
+      return false
+    end  
+  end
+
+  def message_for_done?(msg)
+    if msg == "やった" or msg == "done"
+      return true
+    else
+      return false
+    end  
   end
 
   def callback
@@ -24,31 +42,33 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          #最新の筋トレ記録を取得する
-          @latest_training = Training.find_by(id: Training.count)
-          @latest_training_date = Date.parse(String(@latest_training.created_at).split()[0])
+          received_msg = event.message['text']
 
-          @today = Date.today
+          #最新の筋トレ記録を取得する
+          latest_training = Training.order('created_at DESC').first
+          latest_training_date = Date.parse(String(latest_training.created_at).split()[0])
+
+          today = Date.today
 
           muscle_training_menu = [
             "腹筋20回×3セット！",
             "腕立て伏せ30回×3セット！",
             "腹筋&腕立て伏せ20回ずつ×3セット",
-            "ランニング！雨が降っていれば、休み。",
+            "ランニング！雨が降っていれば休み。",
             "スクワット100回×1セット！",
             "背筋30回×2セット！",
             "まあ、たまには休んでもいいだろう。"
           ]
 
           #まだ今日のメニューをもらっていない場合
-          if @latest_training_date < @today 
+          if latest_training_date < today 
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
-            if event.message['text'] == "メニュー"
+            if message_for_menu?(received_msg)
               response_for_menu = muscle_training_menu.sample
-              @training = Training.create(menu:response_for_menu)
+              training = Training.create(menu:response_for_menu)
             
             #「やった」or「done」と送ってきた場合
-            elsif event.message['text'] == "やった" or event.message['text'] == "done"
+            elsif message_for_done?(received_msg)
               response_for_menu = "先にメニューを選んでください！"
             end    
 
@@ -56,14 +76,14 @@ class WebhookController < ApplicationController
           else
 
             #「メニュー」と送ってきた場合
-            if event.message['text'] == "メニュー"
+            if message_for_menu?(received_msg)
               response_for_menu = muscle_training_menu.sample
-              @latest_training.menu = response_for_menu
+              latest_training.menu = response_for_menu
             
             #「やった」or「done」
-            elsif event.message['text'] == "やった" or event.message['text'] == "done"
+            elsif message_for_done?(received_msg)
               response_for_done = "お疲れさまです"
-              @latest_training.check = true
+              latest_training.done = true
             end
 
           end
@@ -81,7 +101,6 @@ class WebhookController < ApplicationController
           end
 
           client.reply_message(event['replyToken'], message)
-          client.push_message(ENV['LINE_GROUP_ID'],message)
 
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
           response = client.get_message_content(event.message['id'])
