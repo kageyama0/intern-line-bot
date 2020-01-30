@@ -42,10 +42,10 @@ class WebhookController < ApplicationController
         when Line::Bot::Event::MessageType::Text
           received_msg = event.message['text']
           #最新の筋トレ記録を取得する
-          @latest_training = Training.order('created_at DESC').first
-          @latest_training_date = Date.parse(String(@latest_training.created_at).split()[0])
+          latest_training = Training.order('created_at DESC').first
+          latest_training_date = Date.parse(String(latest_training.created_at).split()[0])
 
-          @today = Date.today
+          today = Date.today
 
           muscle_training_menu = [
             "腹筋20回×3セット！",
@@ -58,11 +58,11 @@ class WebhookController < ApplicationController
           ]
 
           #まだ今日のメニューをもらっていない場合
-          if @latest_training_date < @today 
+          if latest_training_date < today 
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
             if event.message['text'] == "メニュー"
               response_for_menu = muscle_training_menu.sample
-              @training = Training.create(menu:response_for_menu)
+              training = Training.create(menu:response_for_menu)
             
             #「やった」or「done」と送ってきた場合
             elsif event.message['text'] == "やった" or event.message['text'] == "done"
@@ -75,12 +75,12 @@ class WebhookController < ApplicationController
             #「メニュー」と送ってきた場合
             if message_for_menu?(received_msg)
               response_for_menu = muscle_training_menu.sample
-              @latest_training.menu = response_for_menu
+              latest_training.menu = response_for_menu
             
             #「やった」or「done」
             elsif message_for_done?(received_msg)
               response_for_done = "お疲れさまです"
-              @latest_training.check = true
+              latest_training.check = true
             end
 
           end
