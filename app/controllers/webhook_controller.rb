@@ -32,6 +32,7 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
+          
           received_msg = event.message['text']
           today = Date.today
           muscle_training_menu = [
@@ -50,12 +51,12 @@ class WebhookController < ApplicationController
           #まだ今日のメニューをもらっていない場合
           if latest_training.created_at.today?
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
-            if event.message['text'] == "メニュー"
+            if message_for_menu?(received_msg)
               response_for_menu = muscle_training_menu.sample
               training = Training.create(menu:response_for_menu)
             
             #「やった」or「done」と送ってきた場合
-            elsif event.message['text'] == "やった" or event.message['text'] == "done"
+            elsif message_for_done?(received_msg)
               response_for_menu = "先にメニューを選んでください！"
             end    
 
