@@ -45,7 +45,6 @@ class WebhookController < ApplicationController
             "まあ、たまには休んでもいいだろう。"
           ]
 
-
           #今日与えられた筋トレメニューのデータがあれば...
           today_range = Date.today.beginning_of_day..Date.today.end_of_day  
           training_of_today = Training.where(created_at: today_range).first
@@ -68,14 +67,12 @@ class WebhookController < ApplicationController
             #「メニュー」と送ってきた場合
             if message_for_menu?(received_msg)
               response_for_menu = muscle_training_menu.sample
-              training_of_today.menu = response_for_menu
               training_of_today.update(menu: response_for_menu)
             
             #「やった」
             elsif message_for_done?(received_msg)
               response_for_done = "お疲れさまです"
-              training_of_today.done = true
-              training_of_today.update(menu: response_for_menu)
+              training_of_today.update(menu: response_for_menu, done: true)
             end
 
           end
