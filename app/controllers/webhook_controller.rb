@@ -53,12 +53,12 @@ class WebhookController < ApplicationController
           if training_of_today.blank?
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
             if message_for_menu?(received_msg)
-              response_for_menu = muscle_training_menu.sample
+              response = muscle_training_menu.sample
               training = Training.create(menu:response_for_menu)
             
             #「やった」と送ってきた場合
             elsif message_for_done?(received_msg)
-              response_for_menu = "先にメニューを選んでください！"
+              response = "先にメニューを選んでください！"
             end    
 
           #すでに今日の筋トレメニューをもらっている場合
@@ -66,28 +66,21 @@ class WebhookController < ApplicationController
 
             #「メニュー」と送ってきた場合
             if message_for_menu?(received_msg)
-              response_for_menu = muscle_training_menu.sample
+              response = muscle_training_menu.sample
               training_of_today.update(menu: response_for_menu)
             
             #「やった」
             elsif message_for_done?(received_msg)
-              response_for_done = "お疲れさまです"
+              response = "お疲れさまです"
               training_of_today.update(done: true)
             end
 
           end
 
-          if response_for_menu.present?
-            message = {
-              type: 'text',
-              text: response_for_menu
-            }
-          elsif response_for_done.present?
-            message = {
-              type: 'text',
-              text: response_for_done
-            } 
-          end
+          message = {
+            type: 'text',
+            text: response
+          } 
 
           client.reply_message(event['replyToken'], message)
 
