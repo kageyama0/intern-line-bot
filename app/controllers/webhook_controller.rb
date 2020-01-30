@@ -15,7 +15,7 @@ class WebhookController < ApplicationController
   end
 
   def message_for_done?(msg)
-    msg == "やった" or msg == "done"
+    msg == "やった"
   end
 
   def callback
@@ -32,17 +32,8 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
+
           received_msg = event.message['text']
-          today = Date.today
-
-          #すでにデータがある場合、最新の筋トレ記録を取得する
-          if Training.any?
-            latest_training = Training.order('created_at DESC').first
-
-          #まだデータがない場合は、最近トレーニングした日を昨日とする。
-          else
-            latest_training = Date.prev_day
-
           muscle_training_menu = [
             "腹筋20回×3セット！",
             "腕立て伏せ30回×3セット！",
@@ -53,16 +44,20 @@ class WebhookController < ApplicationController
             "まあ、たまには休んでもいいだろう。"
           ]
 
+          #今日与えられた筋トレメニューのデータがあれば...
+          today_range = Date.today.beginning_of_day..Date.today.end_of_day  
+          training_of_today = Training.where(created_at: today_range).first
+
           #まだ今日のメニューをもらっていない場合
-          if latest_training.created_at.today?
+          if training_of_today.blank?
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
-            if event.message['text'] == "メニュー"
-              response_for_menu = muscle_training_menu.sample
-              training = Training.create(menu:response_for_menu)
+            if message_for_menu?(received_msg)
+              response = muscle_training_menu.sample
+              training = Training.create(menu:response)
             
-            #「やった」or「done」と送ってきた場合
-            elsif event.message['text'] == "やった" or event.message['text'] == "done"
-              response_for_menu = "先にメニューを選んでください！"
+            #「やった」と送ってきた場合
+            elsif message_for_done?(received_msg)
+              response = "先にメニューを選んでください！"
             end    
 
           #すでに今日の筋トレメニューをもらっている場合
@@ -70,28 +65,21 @@ class WebhookController < ApplicationController
 
             #「メニュー」と送ってきた場合
             if message_for_menu?(received_msg)
-              response_for_menu = muscle_training_menu.sample
-              latest_training.menu = response_for_menu
+              response = muscle_training_menu.sample
+              training_of_today.update(menu: response)
             
-            #「やった」or「done」
+            #「やった」
             elsif message_for_done?(received_msg)
-              response_for_done = "お疲れさまです"
-              latest_training.check = true
+              response = "お疲れさまです"
+              training_of_today.update(done: true)
             end
 
           end
 
-          if response_for_menu.present?
-            message = {
-              type: 'text',
-              text: response_for_menu
-            }
-          elsif response_for_done.present?
-            message = {
-              type: 'text',
-              text: response_for_done
-            } 
-          end
+          message = {
+            type: 'text',
+            text: response
+          } 
 
           client.reply_message(event['replyToken'], message)
 
