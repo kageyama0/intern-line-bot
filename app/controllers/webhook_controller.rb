@@ -34,15 +34,6 @@ class WebhookController < ApplicationController
         when Line::Bot::Event::MessageType::Text
           received_msg = event.message['text']
           today = Date.today
-
-          #すでにデータがある場合、最新の筋トレ記録を取得する
-          if Training.any?
-            latest_training = Training.order('created_at DESC').first
-
-          #まだデータがない場合は、最近トレーニングした日を昨日とする。
-          else
-            latest_training = Date.prev_day
-
           muscle_training_menu = [
             "腹筋20回×3セット！",
             "腕立て伏せ30回×3セット！",
@@ -52,6 +43,9 @@ class WebhookController < ApplicationController
             "背筋30回×2セット！",
             "まあ、たまには休んでもいいだろう。"
           ]
+
+          #最新の筋トレ記録を取得する
+          latest_training = Training.order('created_at DESC').first
 
           #まだ今日のメニューをもらっていない場合
           if latest_training.created_at.today?
