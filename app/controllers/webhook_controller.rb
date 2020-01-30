@@ -53,7 +53,7 @@ class WebhookController < ApplicationController
             #「メニュー」と送ってきた場合、今日のメニューをランダムに作成
             if message_for_menu?(received_msg)
               response = muscle_training_menu.sample
-              training = Training.create(menu:response_for_menu)
+              training = Training.create(menu:response)
             
             #「やった」と送ってきた場合
             elsif message_for_done?(received_msg)
@@ -66,7 +66,7 @@ class WebhookController < ApplicationController
             #「メニュー」と送ってきた場合
             if message_for_menu?(received_msg)
               response = muscle_training_menu.sample
-              training_of_today.update(menu: response_for_menu)
+              training_of_today.update(menu: response)
             
             #「やった」
             elsif message_for_done?(received_msg)
