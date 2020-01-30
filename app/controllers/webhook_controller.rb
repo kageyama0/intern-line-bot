@@ -15,7 +15,7 @@ class WebhookController < ApplicationController
   end
 
   def message_for_done?(msg)
-    msg == "やった" or msg == "done"
+    msg == "やった"
   end
 
   def callback
@@ -32,7 +32,7 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          
+
           received_msg = event.message['text']
           today = Date.today
           muscle_training_menu = [
@@ -45,8 +45,14 @@ class WebhookController < ApplicationController
             "まあ、たまには休んでもいいだろう。"
           ]
 
-          #最新の筋トレ記録を取得する
-          latest_training = Training.order('created_at DESC').first
+          #すでにデータがある場合、最新の筋トレ記録を取得する
+          if Training.any?
+            latest_training = Training.order('created_at DESC').limit(1)
+
+          #まだデータがない場合は、最近トレーニングした日を昨日とする。
+          else
+            latest_training = Date.prev_day
+          end
 
           #まだ今日のメニューをもらっていない場合
           if latest_training.created_at.today?
@@ -55,7 +61,7 @@ class WebhookController < ApplicationController
               response_for_menu = muscle_training_menu.sample
               training = Training.create(menu:response_for_menu)
             
-            #「やった」or「done」と送ってきた場合
+            #「やった」と送ってきた場合
             elsif message_for_done?(received_msg)
               response_for_menu = "先にメニューを選んでください！"
             end    
@@ -68,7 +74,7 @@ class WebhookController < ApplicationController
               response_for_menu = muscle_training_menu.sample
               latest_training.menu = response_for_menu
             
-            #「やった」or「done」
+            #「やった」
             elsif message_for_done?(received_msg)
               response_for_done = "お疲れさまです"
               latest_training.check = true
