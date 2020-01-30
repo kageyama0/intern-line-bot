@@ -8,7 +8,7 @@ task :send_penalty => :environment do
     "筋トレ失敗…でもまあ今日はおごらなくてもいいかな、うん"
   ]
   if not latest_training.done?
-    client.push_message(ENV['LINE_GROUP_ID'],message)
+    client.push_message(ENV['LINE_GROUP_ID'],penalty_messages.sample)
   end
   puts "Sending a message is completed."
 end
