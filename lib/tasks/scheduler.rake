@@ -32,7 +32,7 @@ task :send_penalty => :environment do
 
     p_msg = {
       type: 'text',
-      text: '〇〇です' + penalty_message
+      text: '〇〇です。' + penalty_message
     }  
   else
     if training_of_today.blank?

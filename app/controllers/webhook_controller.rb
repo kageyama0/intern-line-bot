@@ -82,7 +82,6 @@ class WebhookController < ApplicationController
           } 
 
           client.reply_message(event['replyToken'], message)
-          client.push_message(ENV['LINE_GROUP_ID'], message)
 
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
           response = client.get_message_content(event.message['id'])
