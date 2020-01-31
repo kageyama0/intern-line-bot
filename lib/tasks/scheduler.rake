@@ -10,13 +10,13 @@ task :send_penalty => :environment do
   puts 'try to send a penalty_message'
 
   #通常モード
-  # today_range = Date.today.beginning_of_day..Date.today.end_of_day
-  # training_of_today = Training.where(created_at: today_range).first
+  today_range = Date.today.beginning_of_day..Date.today.end_of_day
+  training_of_today = Training.where(created_at: today_range).first
 
-  #鬼畜モード(10minに一回筋トレしたかチェック)
-  tenminpast = Time.now - 600
-  tenminutes_range = tenminpast..Time.now
-  p training_of_today = Training.where(created_at: tenminutes_range).first
+  # #鬼畜モード(10minに一回筋トレしたかチェック)
+  # tenminpast = Time.now - 600
+  # tenminutes_range = tenminpast..Time.now
+  # p training_of_today = Training.where(created_at: tenminutes_range).first
 
   penalty_messages = [
     '…先着１名様に昼食おごります…',
