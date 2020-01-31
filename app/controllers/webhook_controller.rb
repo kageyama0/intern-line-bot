@@ -49,9 +49,9 @@ class WebhookController < ApplicationController
           training_of_today = Training.where(created_at: today_range).first
 
           #鬼畜モード(10minに一回筋トレしたかチェック)
-          tenminpast = Time.now - 1
-          tenminutes_range = tenminpast..Time.now
-          training_of_today = Training.where(created_at: tenminutes_range).first
+          # tenminpast = Time.now - 1
+          # tenminutes_range = tenminpast..Time.now
+          # training_of_today = Training.where(created_at: tenminutes_range).first
 
           #まだ今日のメニューをもらっていない場合
           if training_of_today.blank?
