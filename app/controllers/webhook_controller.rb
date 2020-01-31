@@ -87,7 +87,12 @@ class WebhookController < ApplicationController
             training_of_week = Training.where("created_at > ?",a_week_ago)
             response = ""
             training_of_week.each do |t|
-              response += t.created_at.strftime('%Y年%m月%d日 %H:%M') + ":" + t.menu + "\n"
+              if t.done?
+                check = "✓"
+              else
+                check = "✗"
+              end
+                response += check + t.created_at.strftime('%m月%d日%H:%M') + ":" + t.menu + "\n"
             end
           end
 
