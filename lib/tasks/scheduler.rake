@@ -22,23 +22,23 @@ task :send_penalty => :environment do
 
 
   penalty_messages = [
-    '筋トレ失敗…先着１名様に昼食おごります…',
-    '筋トレ失敗しました…先着３名様に飲み物おごります…',
-    '筋トレ失敗…でもまあ今日はおごらなくてもいいかな、うん'
+    '…先着１名様に昼食おごります…',
+    '…先着３名様に飲み物おごります…',
+    '…でもまあ今日はおごらなくてもいいかな、うん'
   ]
   penalty_message = penalty_messages.sample
 
-  if not training_of_today.done?
-
+  if training_of_today.blank?
     p_msg = {
       type: 'text',
-      text: '〇〇です。' + penalty_message
-    }  
+      text: '筋トレするのをそもそも忘れていました'+ penalty_message
+    }
+
   else
-    if training_of_today.blank?
+    if not training_of_today.done?
       p_msg = {
         type: 'text',
-        text: '筋トレするのを忘れていました。'+ penalty_message
+        text: '〇〇です。' + penalty_message
       }
     else  
       p_msg = {
