@@ -16,16 +16,15 @@ task :send_penalty => :environment do
   #鬼畜モード(10minに一回筋トレしたかチェック)
   tenminpast = Time.now - 600
   tenminutes_range = tenminpast..Time.now
-  training_of_today = Training.where(created_at: tenminutes_range).first
-
-  p training_of_today
-
+  p training_of_today = Training.where(created_at: tenminutes_range).first
 
   penalty_messages = [
     '…先着１名様に昼食おごります…',
     '…先着３名様に飲み物おごります…',
-    '…でもまあ今日はおごらなくてもいいかな、うん'
+    '…今日から一週間以内にサボった場合、毎回ペナルティが３倍になる！！'
+    '…でも今日はペナルティなし！'
   ]
+
   penalty_message = penalty_messages.sample
 
   if training_of_today.blank?
@@ -38,7 +37,7 @@ task :send_penalty => :environment do
     if not training_of_today.done?
       p_msg = {
         type: 'text',
-        text: '〇〇です。' + penalty_message
+        text: '〇〇です。筋トレやりそこねました' + penalty_message
       }
     else  
       p_msg = {
