@@ -81,6 +81,21 @@ class WebhookController < ApplicationController
 
           end
 
+          #「記録」
+          if received_msg == '記録'
+            a_week_ago = Date.today - 7
+            training_of_week = Training.where("created_at > ?",a_week_ago)
+            response = ""
+            training_of_week.each do |t|
+              if t.done?
+                check = "✓"
+              else
+                check = "✗"
+              end
+                response += check + t.created_at.strftime('%m月%d日%H:%M') + ":" + t.menu + "\n"
+            end
+          end
+
           message = {
             type: 'text',
             text: response
