@@ -20,7 +20,7 @@ task :send_penalty => :environment do
 
   p training_of_today
 
-  if training_of_today.blank?
+  if not training_of_today.done?
     penalty_messages = [
       '〇〇です。筋トレ失敗…先着１名様に昼食おごります…',
       '〇〇です。筋トレ失敗しました…先着３名様に飲み物おごります…',
